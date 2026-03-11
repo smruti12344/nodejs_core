@@ -12,6 +12,9 @@ const clients = [];
 server.on("connection", (socket) => {
   console.log("A new connection to the server");
   const clientId = clients.length + 1;
+  clients.map((client) => {
+    client.socket.write(`new user-${clientId} joined the chat!`);
+  });
   socket.write(`id-${clientId}`);
   socket.on("data", (data) => {
     const dataString = data.toString("utf-8");
@@ -22,6 +25,11 @@ server.on("connection", (socket) => {
       client.socket.write(`> User ${id}: ${message}`);
     });
   });
+  socket.on('error',()=>{
+clients.map((client)=>{
+  client.socket.write(`user-${clientId} left the chat!`);
+});
+});
   clients.push({ id: clientId.toString(), socket: socket });
 });
 
