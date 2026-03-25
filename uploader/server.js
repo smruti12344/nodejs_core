@@ -14,9 +14,14 @@ server.on('connection',(socket)=>{
         if(!fileHandler){
             //pause receiving data from client
             socket.pause();
-        fileHandler = await fs.open('./data.txt','w');
+         const indexOfDivider = data.indexOf('-------');
+         const fileName = data.subarray(10,indexOfDivider).toString('utf-8');
+         console.log(`file name is ${fileName}`);
+
+
+        fileHandler = await fs.open(`storage/${fileName}`,'w');
         fileStream = fileHandler.createWriteStream();
-       fileStream.write(data);
+       fileStream.write(data.subarray(indexOfDivider+7)); // write data to file
          //resume receiving data from client
         socket.resume();
         fileStream.on('drain',()=>{

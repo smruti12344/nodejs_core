@@ -1,12 +1,19 @@
 const net = require("node:net");
 const fs = require("node:fs/promises");
+const path = require("node:path");
 
-let fileHandler, fileReadbleStream;
+
 // crate client connection
 const client = net.createConnection({ port: 8000, host: "::1" }, async () => {
+    //read file from cli 
+const filePath = process.argv[2];
+const fileName = path.basename(filePath);
+let fileHandler, fileReadbleStream;
   console.log("connected to server");
-  fileHandler = await fs.open("./data.txt", "r");
+  fileHandler = await fs.open(filePath, "r");
   fileReadbleStream = fileHandler.createReadStream();
+
+  client.write(`fileName: ${fileName}-------`); // send file name to server
   //once connected send data to server
   fileReadbleStream.on("data", (data) => {
     console.log("data retrive from file");
